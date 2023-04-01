@@ -1,0 +1,3 @@
+Allow user to explore past the first 25 results. 
+    - Look at changing const choice to be given pagination as well (everything) and let prompt deal with that.
+    
