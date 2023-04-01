@@ -103,6 +103,24 @@ const searchAnime = async (args) => {
 };
 
 
+const searchManga = async (args) => {
+    const { name } = args;
+
+    const listOfPicks = await api.findMangaLike(name);
+
+    if(listOfPicks == null){
+        console.log('\x1b[41m \x1b[30m',
+            `We found 0 results for the search term "${name}"`,
+            '\x1b[0m \n');
+        return;
+    }
+    console.log('\x1b[43m \x1b[30m',
+        `We found ${listOfPicks.pagination.items.count} results for the search term "${name}"`,
+        '\x1b[0m \n');
+};
+
+
 module.exports = {
-    searchAnime
+    searchAnime,
+    searchManga
 };
