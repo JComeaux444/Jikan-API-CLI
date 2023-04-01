@@ -8,6 +8,7 @@ const history = require('./history.js');
 
 // for future _prompt changes, incoming will be a whole object with pagination / data. 
 // will need checks for next/prev page in prompt methods and append to beginning and end of display* const
+// possible prompt change needed is new page input
 
 
 //fancy prompt we use that allows users to look at and chose the anime they were looking for
