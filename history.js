@@ -1,11 +1,12 @@
 const superagent = require('superagent');
 const fs = require('fs');
 
-const writeToJSON = async ( results, searchTerm ) => {
+const writeToJSON = async ( results, searchTerm, type='unknown' ) => {
     try {
         const data = {
             resultCount : results,
-            search : searchTerm
+            search : searchTerm,
+            searchType : type
         };
 
 

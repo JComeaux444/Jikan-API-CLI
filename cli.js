@@ -54,6 +54,8 @@ yargs(process.argv.slice(2))
 
                 //console.log(`${args.catagory_name} is not ready yet, anime is difficult to read!`);
             } else if (args.catagory_name === 'manga') {
+
+                //Searches for the manga the user is looking for
                 app.searchManga(args);
             
             } else if (args.catagory_name === 'characters') {

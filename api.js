@@ -36,6 +36,7 @@ const findAnimeByID = async (id) => {
 
 };
 
+// -------------- Manga -------------
 
 const findMangaLike = async (searchTerm) => {
     try{
@@ -55,9 +56,25 @@ const findMangaLike = async (searchTerm) => {
     }
 };
 
+const findMangaByID = async (id) => {
+    try {
+
+        const searchURL = `${base}manga/${id}`;
+        const res = await superagent.get(searchURL);
+
+        return res.body;
+
+    } catch (error) {
+        console.log(error);
+    }
+
+};
+
 
 module.exports = {
     //same as if you did findAnimeLike : findAnimeLike
     findAnimeLike,
-    findAnimeByID
+    findAnimeByID,
+    findMangaLike,
+    findMangaByID
 };
