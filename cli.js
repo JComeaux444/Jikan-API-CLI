@@ -45,18 +45,22 @@ yargs(process.argv.slice(2))
         (args) => {
             if (args.catagory_name === 'anime') {
                 
-                // -------------------------------
+                // ------------------------------
                 // Basically shows what is above in .options but it's slightly different. 
                 //console.log('in the if === anime area, args:',args); // helped for debugging
                 app.searchAnime(args); 
                 // you can put args.name here but may limit what can be input into here if expanded
-                // -------------------------------
+                // ------------------------------
 
                 //console.log(`${args.catagory_name} is not ready yet, anime is difficult to read!`);
             } else if (args.catagory_name === 'manga') {
-                console.log(`${args.catagory_name} is not available, too many books to sort atm`);
+
+                //Searches for the manga the user is looking for
+                app.searchManga(args);
+            
             } else if (args.catagory_name === 'characters') {
                 console.log(`${args.catagory_name} is not available, too many characters to memorize`);
+            
             } else {
                 console.log(`${args.catagory_name} is not available`);
             }

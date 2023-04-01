@@ -36,9 +36,45 @@ const findAnimeByID = async (id) => {
 
 };
 
+// -------------- Manga -------------
+
+const findMangaLike = async (searchTerm) => {
+    try{
+        const searchURL = `${base}manga?q=${searchTerm}&sfw`;
+        const res = await superagent.get(searchURL);
+
+        //console.log(res.body);
+        //console.log(res.body.pagination.items.count);
+        if(res.body.pagination.items.count < 1){
+            console.log(`${searchTerm} was not found in the data base. Please try again with a new search term.`);
+            return null;
+        }
+
+        return res.body;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+const findMangaByID = async (id) => {
+    try {
+
+        const searchURL = `${base}manga/${id}`;
+        const res = await superagent.get(searchURL);
+
+        return res.body;
+
+    } catch (error) {
+        console.log(error);
+    }
+
+};
+
 
 module.exports = {
     //same as if you did findAnimeLike : findAnimeLike
     findAnimeLike,
-    findAnimeByID
+    findAnimeByID,
+    findMangaLike,
+    findMangaByID
 };
