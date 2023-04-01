@@ -74,9 +74,13 @@ const searchAnime = async (args) => {
 
     //from this we also are given amount of results. We can use the first line 'name' as search term in history.json too.
     console.log('\x1b[43m \x1b[30m',
-        `We found ${listOfPicks.pagination.items.count} results for the search term "${name}"`,
+        `We found ${listOfPicks.pagination.items.total} results for the search term "${name}"`,
         '\x1b[0m \n');
-
+    if(listOfPicks.pagination.items.total > 25){
+        console.log('\x1b[43m \x1b[30m',
+            `We can only show you ${listOfPicks.pagination.items.count} results at the moment`,
+            '\x1b[0m \n');
+    }
 
     // choices for the user to pick from
     const choice = await _animePrompt(listOfPicks.data);
@@ -101,7 +105,7 @@ const searchAnime = async (args) => {
     const animeOutput = await _printAnimeInfo(animeChosen);
 
     // Where we append the search and results to the history, using historyjs call
-    const logHistory = await history.writeToJSON(listOfPicks.pagination.items.count,name,mediaType);
+    const logHistory = await history.writeToJSON(listOfPicks.pagination.items.total,name,mediaType);
 
 };
 
@@ -168,8 +172,13 @@ const searchManga = async (args) => {
         return;
     }
     console.log('\x1b[43m \x1b[30m',
-        `We found ${listOfPicks.pagination.items.count} results for the search term "${name}"`,
+        `We found ${listOfPicks.pagination.items.total} results for the search term "${name}"`,
         '\x1b[0m \n');
+    if(listOfPicks.pagination.items.total > 25){
+        console.log('\x1b[43m \x1b[30m',
+            `We can only show you ${listOfPicks.pagination.items.count} results at the moment`,
+            '\x1b[0m \n');
+    }
 
     // choices for the user to pick from
     const choice = await _mangaPrompt(listOfPicks.data);
@@ -184,7 +193,7 @@ const searchManga = async (args) => {
 
     const mangaOutput = await _printMangaInfo(mangaChosen);
 
-    const logHistory = await history.writeToJSON(listOfPicks.pagination.items.count,name,mediaType);
+    const logHistory = await history.writeToJSON(listOfPicks.pagination.items.total,name,mediaType);
 };
 
 
