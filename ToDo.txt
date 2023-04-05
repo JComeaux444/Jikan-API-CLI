@@ -1,0 +1,4 @@
+Allow user to explore past the first 25 results. 
+    - Look at changing const choice to be given pagination as well (everything) and let prompt deal with that.
+
+Optional Idea: Let cli be called 'node cli.js' and have it give user options for searching for anime,manga,char.
