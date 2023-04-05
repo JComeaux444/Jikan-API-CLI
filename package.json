@@ -1,6 +1,6 @@
 {
   "name": "anime_finder",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "A project that uses jikan api to search for anime, manga, and more. This version is broken off from a project allowing for more improvements.",
   "main": "cli.js",
   "scripts": {

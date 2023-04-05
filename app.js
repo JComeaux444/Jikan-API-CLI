@@ -12,7 +12,7 @@ const history = require('./history.js');
 
 
 //fancy prompt we use that allows users to look at and chose the anime they were looking for
-const _animePrompt = async (animes) => {
+const _animePrompt = async (animes, pagination=0) => {
     const displayAnimes = animes.map((anime) => {
         return { title: `${anime.title}, Year: ${anime.year}`, value: anime.mal_id };
     });
@@ -33,6 +33,9 @@ const _animePrompt = async (animes) => {
 const _printAnimeInfo = async (anime) => {
     //console.log(anime);
     //console.log(anime.data.genres);
+    //error handling
+    if(anime==null){return;}
+
     const genres = [];
     anime.data.genres.forEach(genre => {
         genres.push(genre.name);
@@ -68,6 +71,8 @@ const searchAnime = async (args) => {
     // if we use .data we will get info from the anime only. each API is different however
     //console.log('list of picks is here!: \n ',listOfPicks); // good for debugging
 
+    const pagination = listOfPicks.pagination;
+    console.log('pagination is here!: \n ',pagination);
 
     // statement makes sure we have something to pick from or exits everything else to prevent freezing
     if(listOfPicks == null){
@@ -83,6 +88,7 @@ const searchAnime = async (args) => {
     console.log('\x1b[43m \x1b[30m',
         `We found ${listOfPicks.pagination.items.total} results for the search term "${name}"`,
         '\x1b[0m \n');
+    //temp warning
     if(listOfPicks.pagination.items.total > 25){
         console.log('\x1b[43m \x1b[30m',
             `We can only show you ${listOfPicks.pagination.items.count} results at the moment`,
@@ -109,17 +115,17 @@ const searchAnime = async (args) => {
 
 
     // Calls a function that prints out the info in a nicer fashion simple and uses console.log
-    const animeOutput = await _printAnimeInfo(animeChosen);
+    await _printAnimeInfo(animeChosen);
 
     // Where we append the search and results to the history, using historyjs call
-    const logHistory = await history.writeToJSON(listOfPicks.pagination.items.total,name,mediaType);
+    await history.writeToJSON(listOfPicks.pagination.items.total,name,mediaType);
 
 };
 
 // ------------------------------ Manga -----------------------------------
 
 //fancy prompt we use that allows users to look at and chose the anime they were looking for
-const _mangaPrompt = async (manga) => {
+const _mangaPrompt = async (manga, pagination=0) => {
     const displayManga = manga.map((manga) => {
         // API returns a JSON in which you must get year doing this or similiar
         return { title: `${manga.title}, Year: ${manga.published.prop.from.year}`, value: manga.mal_id };
@@ -139,6 +145,9 @@ const _mangaPrompt = async (manga) => {
 //The thing that will be grabbing the id of the manga the user selects then prints out the info in a nice way
 const _printMangaInfo = async (manga) => {
     //console.log(manga);
+
+    //error handling
+    if(manga==null){return;}
 
     const genres = [];
     
@@ -181,6 +190,7 @@ const searchManga = async (args) => {
     console.log('\x1b[43m \x1b[30m',
         `We found ${listOfPicks.pagination.items.total} results for the search term "${name}"`,
         '\x1b[0m \n');
+    //temp warning
     if(listOfPicks.pagination.items.total > 25){
         console.log('\x1b[43m \x1b[30m',
             `We can only show you ${listOfPicks.pagination.items.count} results at the moment`,
@@ -193,18 +203,111 @@ const searchManga = async (args) => {
     let mediaType = Object.keys(choice);
     mediaType = mediaType[0];
 
-    // uses API to get anime data by ID
+    // uses API to get manga data by ID
     const mangaChosen = await api.findMangaByID(choice.manga);
     //prints data given out by above call
     //console.log(mangaChosen);
 
-    const mangaOutput = await _printMangaInfo(mangaChosen);
+    // calls a function to print manga info
+    await _printMangaInfo(mangaChosen);
 
-    const logHistory = await history.writeToJSON(listOfPicks.pagination.items.total,name,mediaType);
+    // calls func to write to history
+    await history.writeToJSON(listOfPicks.pagination.items.total,name,mediaType);
+};
+
+
+
+// ------------------------------ Character -----------------------------------
+
+
+//fancy prompt we use that allows users to look at and chose the anime they were looking for
+const _characterPrompt = async (characters, pagination=0) => {
+    
+    const displayCharacter = characters.map((character) => {
+        // API returns a JSON in which you must get year doing this or similiar
+        let about = character.about;
+        let nicknames = character.nicknames;
+
+        if(about == null) {about='Not Available';} else {about='Available';}
+        if(nicknames === []) {nicknames = 'N/A';}
+        return { title: `Name: ${character.name}, Favorites: ${character.favorites}, About: ${about}, `+
+                `Nicknames: ${nicknames}`, value: character.mal_id };
+    });
+
+    return await prompts([
+        {
+            type: 'select',
+            name: 'character',
+            message: 'Select a character to view',
+            choices: displayCharacter    
+        }
+    ]);
+};
+
+const _printCharacterInfo = async (character) => {
+    //error handling
+    if(character==null){return;}
+    
+    let nicknames = character.data.nicknames;
+    if(nicknames === []) {nicknames = 'N/A';}
+
+    // font colors from https://stackoverflow.com/questions/9781218/how-to-change-node-jss-console-font-color
+    console.log (
+        '\x1b[34m',' MyAnimeList URL:','\x1b[0m', character.data.url,' \n',
+        '\x1b[32m','Name:','\x1b[0m', character.data.name,' \n',
+        '\x1b[32m','Name in Kanji:','\x1b[0m',character.data.name_kanji,' \n',
+        '\x1b[32m','Nicknames:','\x1b[0m',nicknames,' \n',
+        '\x1b[32m','Favorites:','\x1b[0m',character.data.favorites,' \n',
+        '\x1b[32m','About:','\x1b[0m',character.data.about,' \n'
+    );
+};
+
+const searchCharacter = async (args) => {
+    const { name } = args;
+
+    //returns list of item matching the search term (name)
+    const listOfPicks = await api.findCharacterLike(name);
+    //console.log('list o picks is here!! ',listOfPicks);
+
+    // statement makes sure we have something to pick from or exits everything else to prevent freezing
+    if(listOfPicks == null){
+        console.log('\x1b[41m \x1b[30m',
+            `We found 0 results for the search term "${name}"`,
+            '\x1b[0m \n');
+        return;
+    }
+    console.log('\x1b[43m \x1b[30m',
+        `We found ${listOfPicks.pagination.items.total} results for the search term "${name}"`,
+        '\x1b[0m \n');
+    //temp warning
+    if(listOfPicks.pagination.items.total > 25){
+        console.log('\x1b[43m \x1b[30m',
+            `We can only show you ${listOfPicks.pagination.items.count} results at the moment`,
+            '\x1b[0m \n');
+    }
+
+    // choices for the user to pick from
+    const choice = await _characterPrompt(listOfPicks.data);
+    //console.log(choice);
+    let mediaType = Object.keys(choice);
+    mediaType = mediaType[0];
+
+    // uses API to get character data by ID
+    const characterChosen = await api.findCharacterByID(choice.character);
+    //prints data given out by above call
+    //console.log(characterChosen);
+
+    // calls a function to print manga info
+    await _printCharacterInfo(characterChosen);
+
+    // calls func to write to history
+    await history.writeToJSON(listOfPicks.pagination.items.total,name,mediaType);
+
 };
 
 
 module.exports = {
     searchAnime,
-    searchManga
+    searchManga,
+    searchCharacter
 };

@@ -27,7 +27,7 @@ yargs(process.argv.slice(2))
                     .positional('catagory_name', {
                         describe: 'name of the catagory you want to use.',
                         type: 'string',
-                        choices: ['anime','manga','characters'] // Our api also has other choices we only use anime option
+                        choices: ['anime','manga','character'] // Our api also has other choices we only use anime option
                     })
                     // options aka flags that exists on our command
                     // first argument is the short or long form for the option name (ex: long form)
@@ -52,14 +52,17 @@ yargs(process.argv.slice(2))
                 // you can put args.name here but may limit what can be input into here if expanded
                 // ------------------------------
 
-                //console.log(`${args.catagory_name} is not ready yet, anime is difficult to read!`);
             } else if (args.catagory_name === 'manga') {
 
                 //Searches for the manga the user is looking for
                 app.searchManga(args);
             
-            } else if (args.catagory_name === 'characters') {
-                console.log(`${args.catagory_name} is not available, too many characters to memorize`);
+            } else if (args.catagory_name === 'character') {
+
+                //Searches for the manga the user is looking for
+                app.searchCharacter(args);
+
+                //console.log(`${args.catagory_name} is not available, too many characters to memorize`);
             
             } else {
                 console.log(`${args.catagory_name} is not available`);
