@@ -12,17 +12,38 @@ const history = require('./history.js');
 
 
 //fancy prompt we use that allows users to look at and chose the anime they were looking for
-const _animePrompt = async (animes, pagination=0) => {
+const _animePrompt = async (apiReturnedData) => {
+
+    //New change here only
+    //Idea is to allow this prompt to add prev and next buttons for page changes
+    //api.js change needed possibly, next/prev functions given search url
+    const animes = apiReturnedData.data;
+    let selections = [];
+    const prevButton = [{ title: 'Previous Page', value: 'prev' }];
+    const nextButton = [{ title: 'Next Page', value: 'next' }];
+
     const displayAnimes = animes.map((anime) => {
         return { title: `${anime.title}, Year: ${anime.year}`, value: anime.mal_id };
     });
 
+    if(apiReturnedData.pagination.current_page > 1){
+        selections = prevButton.concat( displayAnimes );
+    } else {
+        selections = displayAnimes;
+    }
+    
+    if(apiReturnedData.pagination.current_page < apiReturnedData.pagination.last_visible_page){
+        selections = selections.concat( nextButton );
+    }
+    //console.log(selections);
+    //console.log(displayAnimes.type);
     return await prompts([
         {
             type: 'select',
             name: 'anime',
-            message: 'Select a anime to view',
-            choices: displayAnimes
+            message: 'Select an anime to view! \nScroll to the bottom '+
+                    'or top to see next page or previous page options if available.',
+            choices: selections
             
         }
     ]);
@@ -96,7 +117,7 @@ const searchAnime = async (args) => {
     }
 
     // choices for the user to pick from
-    const choice = await _animePrompt(listOfPicks.data);
+    const choice = await _animePrompt(listOfPicks);
 
     let mediaType = Object.keys(choice);
     mediaType = mediaType[0];
@@ -247,7 +268,7 @@ const _characterPrompt = async (characters, pagination=0) => {
 const _printCharacterInfo = async (character) => {
     //error handling
     if(character==null){return;}
-    
+
     let nicknames = character.data.nicknames;
     if(nicknames === []) {nicknames = 'N/A';}
 
